@@ -10,7 +10,6 @@ app.http('GetSales', {
             const pool = await getConnection();
             const req = pool.request();
 
-            // جيب المبيعات مع تفاصيل كل فاتورة
             const result = await req.query(`
                 SELECT 
                     s.id,
@@ -36,7 +35,6 @@ app.http('GetSales', {
                 ORDER BY s.sale_date DESC
             `);
 
-            // الـ items بييجي كـ JSON string — محتاج نعمله parse
             const sales = result.recordset.map(sale => ({
                 ...sale,
                 items: sale.items ? JSON.parse(sale.items) : []

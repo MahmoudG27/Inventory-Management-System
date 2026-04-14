@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getProducts, deleteProduct } from '../api';
+import axios from 'axios';
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -32,6 +33,21 @@ function Products() {
     }
   };
 
+  const handleImageUpload = async (productId, file) => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('image', file);
+    try {
+      await axios.post(
+        `https://inventory-sys.azurewebsites.net/api/products/${productId}/image`,
+        formData
+      );
+      fetchProducts();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Image upload failed');
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error)   return <p style={{ color: 'red' }}>{error}</p>;
 
@@ -50,7 +66,7 @@ function Products() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#f5f5f5' }}>
-              {['SKU', 'Name', 'Category', 'Price', 'Stock', 'Status', 'Actions'].map(h => (
+              {['SKU', 'Name', 'Category', 'Price', 'Stock', 'Status', 'Image', 'Actions'].map(h => (
                 <th key={h} style={thStyle}>{h}</th>
               ))}
             </tr>
@@ -73,6 +89,25 @@ function Products() {
                   }}>
                     {p.quantity_in_stock <= p.low_stock_threshold ? 'Low Stock' : 'In Stock'}
                   </span>
+                </td>
+                <td style={tdStyle}>
+                  {p.image_url ? (
+                    <img
+                      src={p.image_url}
+                      alt={p.name}
+                      style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+                    />
+                  ) : (
+                    <label style={{ cursor: 'pointer', color: '#0078d4', fontSize: '13px' }}>
+                      + Upload
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        style={{ display: 'none' }}
+                        onChange={(e) => handleImageUpload(p.id, e.target.files[0])}
+                      />
+                    </label>
+                  )}
                 </td>
                 <td style={tdStyle}>
                   <button

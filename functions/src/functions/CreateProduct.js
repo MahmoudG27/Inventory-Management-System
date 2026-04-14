@@ -41,6 +41,7 @@ app.http('CreateProduct', {
                 VALUES 
                     (@sku, @name, @category, @unit_price, @quantity_in_stock, @low_stock_threshold, @created_by)
             `);
+            context.log(`PRODUCT_CREATED: sku=${sku} name=${name} category=${category}`);
 
             return {
                 status: 201,
@@ -55,7 +56,6 @@ app.http('CreateProduct', {
         } catch (error) {
             context.error('CreateProduct error:', error);
 
-            // لو الـ SKU متكرر
             if (error.number === 2627) {
                 return {
                     status: 409,

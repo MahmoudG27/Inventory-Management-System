@@ -49,7 +49,6 @@ app.http('DeleteProduct', {
                 };
             }
 
-            // احذف الـ stock_movements الأول، بعدين المنتج
             const transaction = new sql.Transaction(pool);
             await transaction.begin();
 

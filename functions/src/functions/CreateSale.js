@@ -29,7 +29,6 @@ app.http('CreateSale', {
             try {
                 await transaction.begin();
 
-                // 1 — تأكد من الـ stock
                 for (const item of items) {
                     const checkReq = new sql.Request(transaction);
                     checkReq.input('product_id', sql.Int, item.product_id);
@@ -59,12 +58,11 @@ app.http('CreateSale', {
                     }
                 }
 
-                // 2 — عمل الـ Sale record مع reference من JS
-                const saleRef = generateSaleReference(); // ← هنا
+                const saleRef = generateSaleReference();
                 const saleReq = new sql.Request(transaction);
                 saleReq.input('processed_by',   sql.UniqueIdentifier, '00000000-0000-0000-0000-000000000001');
                 saleReq.input('notes',          sql.NVarChar(500),    notes || null);
-                saleReq.input('sale_reference', sql.NVarChar(50),     saleRef); // ← هنا
+                saleReq.input('sale_reference', sql.NVarChar(50),     saleRef);
 
                 const saleResult = await saleReq.query(`
                     INSERT INTO sales (processed_by, notes, sale_reference)
@@ -75,7 +73,6 @@ app.http('CreateSale', {
                 const saleId        = saleResult.recordset[0].id;
                 const saleReference = saleResult.recordset[0].sale_reference;
 
-                // 3 — sale_items + stock update
                 for (const item of items) {
                     const priceReq = new sql.Request(transaction);
                     priceReq.input('product_id', sql.Int, item.product_id);
@@ -114,7 +111,6 @@ app.http('CreateSale', {
                     `);
                 }
 
-                // 4 — حدّث الـ total_amount
                 const totalReq = new sql.Request(transaction);
                 totalReq.input('sale_id', sql.Int, saleId);
                 await totalReq.query(`
@@ -124,6 +120,7 @@ app.http('CreateSale', {
                 `);
 
                 await transaction.commit();
+                context.log(`SALE_CREATED: ref=${saleReference} total=${totalAmount} items=${items.length}`);
 
                 return {
                     status: 201,

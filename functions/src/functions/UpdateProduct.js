@@ -19,7 +19,6 @@ app.http('UpdateProduct', {
             const body = await request.json();
             const { name, category, unit_price, quantity_in_stock, low_stock_threshold } = body;
 
-            // لازم يبعت حاجة واحدة على الأقل
             if (!name && !category && unit_price === undefined && quantity_in_stock === undefined && low_stock_threshold === undefined) {
                 return {
                     status: 400,
@@ -29,7 +28,6 @@ app.http('UpdateProduct', {
 
             const pool = await getConnection();
 
-            // تأكد إن المنتج موجود الأول
             const checkReq = pool.request();
             checkReq.input('id', sql.Int, parseInt(id));
             const check = await checkReq.query('SELECT id FROM products WHERE id = @id');
@@ -41,7 +39,6 @@ app.http('UpdateProduct', {
                 };
             }
 
-            // بنبني الـ query ديناميكياً — بس الحقول اللي اتبعتت
             const updateReq = pool.request();
             updateReq.input('id', sql.Int, parseInt(id));
 

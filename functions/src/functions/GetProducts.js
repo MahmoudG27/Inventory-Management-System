@@ -10,7 +10,6 @@ app.http('GetProducts', {
         try {
             const pool = await getConnection();
 
-            // فلترة اختيارية بالـ category
             const category = request.query.get('category');
 
             let query = `

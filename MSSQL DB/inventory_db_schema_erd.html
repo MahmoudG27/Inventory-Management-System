@@ -1,0 +1,152 @@
+<div id="erd" style="padding: 8px 0;"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+const style = document.createElement('style');
+style.textContent = `
+  body {
+    margin: 0;
+    background: ${dark ? '#050505' : '#ffffff'};
+  }
+  #erd {
+    background: ${dark ? '#050505' : '#ffffff'};
+  }
+  #erd svg text,
+  #erd svg tspan,
+  #erd svg .edgeLabel text {
+    fill: ${dark ? '#ffffff' : '#000000'} !important;
+    font-weight: bold !important;
+  }
+  #erd svg .node rect,
+  #erd svg .node path,
+  #erd svg .row-rect-odd path,
+  #erd svg .row-rect-even path {
+    fill: ${dark ? '#0d0d0d' : '#ffffff'} !important;
+    stroke: ${dark ? '#ffffff' : '#000000'} !important;
+    stroke-width: 1 !important;
+    opacity: 1 !important;
+  }
+  #erd svg .edgeLabel text {
+    fill: ${dark ? '#ffffff' : '#000000'} !important;
+  }
+`;
+document.head?.append(style);
+document.body.style.backgroundColor = dark ? '#050505' : '#ffffff';
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    fontWeight: 'bold',
+    lineColor: dark ? '#ffffff' : '#000000',
+    textColor: dark ? '#ffffff' : '#000000',
+    mainBkg: dark ? '#050505' : '#ffffff',
+    primaryColor: dark ? '#ffffff' : '#000000',
+    secondaryColor: dark ? '#ffffff' : '#000000',
+    tertiaryColor: dark ? '#ffffff' : '#000000',
+    edgeLabelBackground: dark ? '#050505' : '#ffffff',
+    appBorder: dark ? '#ffffff' : '#000000',
+  },
+});
+
+const { svg } = await mermaid.render('erd-svg', `erDiagram
+  users ||--o{ products : "created_by"
+  users ||--o{ sales : "processed_by"
+  products ||--o{ sale_items : "included_in"
+  products ||--o{ stock_movements : "tracked_in"
+  sales ||--o{ sale_items : "contains"
+
+  users {
+    uniqueidentifier id PK
+    nvarchar email
+    nvarchar display_name
+    nvarchar role
+    bit is_active
+    datetime2 created_at
+  }
+
+  products {
+    int id PK
+    nvarchar sku
+    nvarchar name
+    nvarchar category
+    decimal unit_price
+    int quantity_in_stock
+    int low_stock_threshold
+    nvarchar image_url
+    uniqueidentifier created_by FK
+    datetime2 created_at
+    datetime2 updated_at
+  }
+
+  sales {
+    int id PK
+    nvarchar sale_reference
+    uniqueidentifier processed_by FK
+    decimal total_amount
+    nvarchar notes
+    datetime2 sale_date
+  }
+
+  sale_items {
+    int id PK
+    int sale_id FK
+    int product_id FK
+    int quantity
+    decimal unit_price_at_sale
+    decimal subtotal
+  }
+
+  stock_movements {
+    int id PK
+    int product_id FK
+    nvarchar movement_type
+    int quantity_change
+    nvarchar reason
+    datetime2 created_at
+  }
+`);
+
+document.getElementById('erd').innerHTML = svg;
+
+document.querySelectorAll('#erd svg text, #erd svg tspan').forEach(el => {
+  el.setAttribute('fill', dark ? 'white' : 'black');
+  el.setAttribute('font-weight', 'bold');
+});
+
+document.querySelectorAll('#erd svg rect, #erd svg .row-rect-odd path, #erd svg .row-rect-even path').forEach(el => {
+  el.setAttribute('fill', dark ? '#1a1a1a' : 'white');
+  el.setAttribute('opacity', '1');
+});
+
+document.querySelectorAll('#erd svg .node').forEach(node => {
+  const firstPath = node.querySelector('path[d]');
+  if (!firstPath) return;
+  const d = firstPath.getAttribute('d');
+  const nums = d.match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs = [nums[0], nums[2], nums[4], nums[6]];
+  const ys = [nums[1], nums[3], nums[5], nums[7]];
+  const x = Math.min(...xs), y = Math.min(...ys);
+  const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+  const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  rect.setAttribute('x', x); rect.setAttribute('y', y);
+  rect.setAttribute('width', w); rect.setAttribute('height', h);
+  rect.setAttribute('rx', '8');
+  rect.setAttribute('fill', dark ? '#1a1a1a' : 'white');
+  rect.setAttribute('stroke', dark ? 'white' : 'black');
+  rect.setAttribute('stroke-width', firstPath.getAttribute('stroke-width') || '1');
+  for (const a of ['class', 'style']) {
+    if (firstPath.hasAttribute(a)) rect.setAttribute(a, firstPath.getAttribute(a));
+  }
+  firstPath.replaceWith(rect);
+});
+
+document.querySelectorAll('#erd svg .row-rect-odd path, #erd svg .row-rect-even path').forEach(p => {
+  p.setAttribute('stroke', 'none');
+});
+</script>

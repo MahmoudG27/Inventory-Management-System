@@ -2,7 +2,7 @@ const { app } = require('@azure/functions');
 const { getConnection, sql } = require('../database');
 
 app.timer('StockMonitor', {
-    schedule: '0 0 * * * *',  // كل ساعة
+    schedule: '0 0 * * * *',
     handler: async (myTimer, context) => {
 
         context.log('StockMonitor: checking low stock products...');
@@ -11,7 +11,6 @@ app.timer('StockMonitor', {
             const pool = await getConnection();
             const req = pool.request();
 
-            // جيب المنتجات اللي وصلت للـ threshold أو أقل
             const result = await req.query(`
                 SELECT id, name, sku, quantity_in_stock, low_stock_threshold
                 FROM products
@@ -23,9 +22,8 @@ app.timer('StockMonitor', {
                 return;
             }
 
-            context.log(`StockMonitor: found ${result.recordset.length} low stock products.`);
+            context.log(`STOCK_CHECK: found ${result.recordset.length} low stock products`);
 
-            // بعت alert لكل منتج
             for (const product of result.recordset) {
                 await triggerLogicApp({
                     productName:  product.name,
