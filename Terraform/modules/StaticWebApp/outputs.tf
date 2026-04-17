@@ -1,7 +1,3 @@
-output "resource_group_name" {
-  value = azurerm_resource_group.project_rg.name
-}
-
-output "resource_group_location" {
-  value = azurerm_resource_group.project_rg.location
+output "static_web_app_url" {
+  value = "https://${azurerm_static_web_app.main.default_host_name}"
 }

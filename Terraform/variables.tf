@@ -1,11 +1,33 @@
+variable "project_name" {
+  description = "Project name used in all resource names"
+  type        = string
+}
+
 variable "environment" {
-  default = "prod"
+  description = "Environment name"
+  type        = string
 }
 
-variable "resource_group_name" {
+variable "location" {
+  description = "Azure region"
+  type        = string
+}
+
+variable "tenant_id" {
+  type        = string
+  description = "Azure AD Tenant ID"
+}
+
+variable "logic_app_url" {
+  type      = string
+  sensitive = true
+}
+
+variable "github_repo" {
   type = string
 }
 
-variable "resource_group_location" {
-  type = string
+variable "github_runner_token" {
+  type      = string
+  sensitive = true
 }

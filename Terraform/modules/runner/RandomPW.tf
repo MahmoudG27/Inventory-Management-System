@@ -1,5 +1,5 @@
 # Generate random value for the login password
-resource "random_password" "mysql_username_password" {
+resource "random_password" "sql_admin_password" {
   length           = 12
   lower            = true
   min_lower        = 1
