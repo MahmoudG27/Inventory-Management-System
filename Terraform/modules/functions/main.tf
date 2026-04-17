@@ -34,12 +34,6 @@ resource "azurerm_linux_function_app" "main" {
       node_version = "18"
     }
     vnet_route_all_enabled = true
-
-    cors {
-      allowed_origins = [
-        "http://localhost:3000"
-      ]
-    }
   }
 
   app_settings = {
