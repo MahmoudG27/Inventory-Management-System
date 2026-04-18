@@ -77,6 +77,11 @@ module "functions" {
   storage_primary_access_key     = module.storage.storage_primary_access_key
   app_insights_connection_string = module.monitoring.app_insights_connection_string
   key_vault_uri                  = module.keyvault.key_vault_uri
+
+  allowed_cors_origins = [
+    "http://localhost:3000",
+    module.staticwebapp.static_web_app_url
+  ]
 }
 
 module "runner" {
@@ -106,6 +111,11 @@ resource "azurerm_key_vault_access_policy" "function" {
   object_id    = module.functions.function_app_principal_id
 
   secret_permissions = ["Get", "List"]
+}
+
+resource "azurerm_static_web_app_function_app_registration" "link" {
+  static_web_app_id = module.staticwebapp.static_web_app_id
+  function_app_id   = module.functions.function_app_id
 }
 
 # Alert 1 — Function Failures

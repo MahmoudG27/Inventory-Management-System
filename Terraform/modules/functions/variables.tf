@@ -36,3 +36,8 @@ variable "app_insights_connection_string" {
 variable "key_vault_uri" {
   type = string
 }
+
+variable "allowed_cors_origins" {
+  type    = list(string)
+  default = []
+}

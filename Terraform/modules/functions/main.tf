@@ -21,19 +21,24 @@ resource "azurerm_linux_function_app" "main" {
   storage_account_access_key = var.storage_primary_access_key
   service_plan_id            = azurerm_service_plan.main.id
 
-  # Managed Identity — عشان تتكلم مع Key Vault
   identity {
     type = "SystemAssigned"
   }
 
   # VNet Integration
-  virtual_network_subnet_id = var.functions_subnet_id
+  virtual_network_subnet_id     = var.functions_subnet_id
+  public_network_access_enabled = true
 
   site_config {
     application_stack {
       node_version = "18"
     }
     vnet_route_all_enabled = true
+
+    cors {
+      allowed_origins     = var.allowed_cors_origins
+      support_credentials = false
+    }
   }
 
   app_settings = {

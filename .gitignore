@@ -1,1 +1,7 @@
 .vscode
+Terraform/provider.tf
+Terraform/terraform.tfstate
+Terraform/terraform.tfstate.backup
+Terraform/*.tfvars
+Terraform/.terraform
+Terraform/.terraform.lock.hcl
