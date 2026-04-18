@@ -383,6 +383,3 @@ This project is for educational and demonstration purposes.
 
 **Mahmoud Gamal**
 Cloud & DevOps Engineer
-- Azure Certified: AZ-400, AZ-204, AZ-104
-- Kubernetes Certified: CKA
-- Red Hat Certified: RHCE
