@@ -1,3 +1,5 @@
+subscription_id = "1650eff4-9462-45fc-9432-0c58630eb89d"
+
 project_name = "inventory"
 
 environment = "prod"
